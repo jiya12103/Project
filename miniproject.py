@@ -1,39 +1,37 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-
 class StudentPerformanceAnalyzer:
     def __init__(self):
-        self.data = pd.DataFrame(columns=['Name', 'Grade'])
+        self.students = []
 
     def add_student(self, name, grade):
-        self.data = self.data.append({'Name': name, 'Grade': grade}, ignore_index=True)
+        self.students.append({'Name': name, 'Grade': grade})
 
     def analyze_performance(self):
-        if self.data.empty:
+        if not self.students:
             print("No student data available.")
             return
         
-        print("Student Performance Analysis:")
-        print(f"Total Students: {len(self.data)}")
-        print(f"Average Grade: {self.data['Grade'].mean():.2f}")
-        print(f"Highest Grade: {self.data['Grade'].max()}")
-        print(f"Lowest Grade: {self.data['Grade'].min()}")
+        total_students = len(self.students)
+        grades = [student['Grade'] for student in self.students]
+        average_grade = sum(grades) / total_students
+        highest_grade = max(grades)
+        lowest_grade = min(grades)
+
+        print(f"\nTotal Students: {total_students}")
+        print(f"Average Grade: {average_grade:.2f}")
+        print(f"Highest Grade: {highest_grade}")
+        print(f"Lowest Grade: {lowest_grade}")
         
-        grade_distribution = self.data['Grade'].value_counts().sort_index()
+        self.display_grade_distribution(grades)
+
+    def display_grade_distribution(self, grades):
+        # Display grade distribution as simple text
+        grade_counts = {}
+        for grade in grades:
+            grade_counts[grade] = grade_counts.get(grade, 0) + 1
+        
         print("\nGrade Distribution:")
-        print(grade_distribution)
-
-        self.visualize_performance(grade_distribution)
-
-    def visualize_performance(self, grade_distribution):
-        plt.figure(figsize=(10, 5))
-        grade_distribution.plot(kind='bar', color='skyblue')
-        plt.title('Grade Distribution')
-        plt.xlabel('Grades')
-        plt.ylabel('Number of Students')
-        plt.xticks(rotation=0)
-        plt.grid(axis='y')
-        plt.show()
+        for grade, count in sorted(grade_counts.items()):
+            print(f"Grade {grade}: {count} student(s)")
 
 def main():
     analyzer = StudentPerformanceAnalyzer()
@@ -47,7 +45,7 @@ def main():
             analyzer.add_student(name, grade)
         except ValueError:
             print("Invalid grade. Please enter a numeric value.")
-
+    
     analyzer.analyze_performance()
 
 if __name__ == "__main__":
